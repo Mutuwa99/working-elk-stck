@@ -62,15 +62,15 @@ services:
     networks:
       - elk
 
-  heartbeat:
-    image: docker.elastic.co/beats/heartbeat:8.7.1
-    container_name: heartbeat
-    volumes:
-      - ./heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
-    depends_on:
-      - elasticsearch
-    networks:
-      - elk    
+  # heartbeat:
+  #   image: docker.elastic.co/beats/heartbeat:8.7.1
+  #   container_name: heartbeat
+  #   volumes:
+  #     - ./heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
+  #   depends_on:
+  #     - elasticsearch
+  #   networks:
+  #     - elk    
 
 
 volumes:
