@@ -26,21 +26,21 @@ services:
     networks:
       - elk
 
-  logstash:
-    image: docker.elastic.co/logstash/logstash:8.7.1
-    container_name: logstash
-    restart: always
-    volumes:
-      - ./logstash/:/logstash_dir
-    command: logstash -f /logstash_dir/logstash.conf 
-    depends_on:
-      - elasticsearch
-    ports:
-      - '9600:9600'
-    environment:
-      - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
-    networks:
-      - elk
+  # logstash:
+  #   image: docker.elastic.co/logstash/logstash:8.7.1
+  #   container_name: logstash
+  #   restart: always
+  #   volumes:
+  #     - ./logstash/:/logstash_dir
+  #   command: logstash -f /logstash_dir/logstash.conf 
+  #   depends_on:
+  #     - elasticsearch
+  #   ports:
+  #     - '9600:9600'
+  #   environment:
+  #     - "LS_JAVA_OPTS=-Xmx256m -Xms256m"
+  #   networks:
+  #     - elk
 
   kibana:
     image: docker.elastic.co/kibana/kibana:8.7.1
