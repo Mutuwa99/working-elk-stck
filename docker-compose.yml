@@ -62,15 +62,52 @@ services:
     networks:
       - elk
 
-  # heartbeat:
-  #   image: docker.elastic.co/beats/heartbeat:8.7.1
-  #   container_name: heartbeat
-  #   volumes:
-  #     - ./heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
-  #   depends_on:
-  #     - elasticsearch
-  #   networks:
-  #     - elk    
+  heartbeat:
+    image: docker.elastic.co/beats/heartbeat:8.7.1
+    container_name: heartbeat
+    volumes:
+      - ./heartbeat.yml:/usr/share/heartbeat/heartbeat.yml
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk   
+
+
+  apm-server:
+    image: docker.elastic.co/apm/apm-server:8.7.1
+    container_name: apm
+    cap_add: ["CHOWN", "DAC_OVERRIDE", "SETGID", "SETUID"]
+    cap_drop: ["ALL"]
+    ports:
+    - 8200:8200
+    environment:
+      - node.name=es01
+      - SERVERNAME=apm
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200
+      - ELASTICSEARCH_USERNAME=apm_system
+      - ELASTICSEARCH_PASSWORD=changeme
+      - XPACK_SECURITY_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_ENCRYPTEDSAVEDOBJECTS_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+      - XPACK_REPORTING_ENCRYPTIONKEY=${ENCRYPTION_KEY}
+    command: >
+      apm-server -e
+        -E apm-server.rum.enabled=true
+        -E setup.kibana.host=kibana:5601
+        -E setup.template.settings.index.number_of_replicas=0
+        -E apm-server.kibana.enabled=true
+        -E apm-server.kibana.host=kibana:5601
+        -E output.elasticsearch.hosts=["elasticsearch:9200"]
+        -E output.elasticsearch.username=elastic
+        -E output.elasticsearch.password=changeme
+
+    healthcheck:
+      interval: 10s
+      retries: 12
+      test: curl --write-out 'HTTP %{http_code}' --fail --silent --output /dev/null http://localhost:8200/
+    depends_on:
+      - elasticsearch
+    networks:
+      - elk  
 
 
 volumes:
